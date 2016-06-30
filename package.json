@@ -24,8 +24,10 @@
     "webpack-dev-server": "^1.14.0"
   },
   "dependencies": {
-    "altspace": "^0.6.0",
+    "altspace": "^0.13.2",
+    "pleasejs": "^0.4.2",
+    "reveal": "0.0.4",
     "three": "^0.73.0",
-    "pleasejs": "^0.4.2"
+    "tween.js": "^16.3.4"
   }
 }

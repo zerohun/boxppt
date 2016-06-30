@@ -3,7 +3,7 @@ import THREE from 'three';
 
 export default class ChangeColorBehavior {
   constructor(options) {
-
+      this.callback = options.callback;
   }
 
   awake(object3d) {
@@ -29,5 +29,6 @@ export default class ChangeColorBehavior {
 
   update(deltaTime) {
     /* no updating needed, color changes in Firebase 'value' callback above */
+    this.callback();
   }
 }

@@ -1,0 +1,11 @@
+
+canvas{
+    position: fixed;
+    top: 10px;
+    left: 10px;
+}
+
+body{
+    background-color: black;
+    color: grey;
+}

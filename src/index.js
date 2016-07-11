@@ -1,6 +1,8 @@
 import '../style/base.css';
 
 import THREE from 'three';
+import OBJLoader from 'three-obj-loader';
+OBJLoader(THREE);
 import altspace from 'altspace';
 import TWEEN from 'tween.js';
 import Reveal from 'reveal';
@@ -18,8 +20,27 @@ const config = {
 const CUBE_SCALE = 149;
 
 const geometry = new THREE.BoxGeometry(1, 1, 1);
-const material = new THREE.MeshBasicMaterial({ color: '#ffffff' });
+const material = new THREE.MeshBasicMaterial({ color: '#0000ff' });
+material.opacity = 0.5;
+material.transparent = true;
 const cube = new THREE.Mesh(geometry, material);
+
+var photoMaterial = new THREE.MeshBasicMaterial({
+    map: new THREE.TextureLoader().load('image.jpg', function() {} )
+});
+
+var photoGeometry = new THREE.SphereGeometry(40, 60, 50);
+photoGeometry.applyMatrix(new THREE.Matrix4().makeScale(-10, 10, 10));
+photoGeometry.applyMatrix(new THREE.Matrix4().makeTranslation(0,-100,500));
+
+photoMaterial.name = "photoMaterial";
+photoMaterial.opacity = 0.0;
+photoMaterial.transparent = true;
+var mesh = new THREE.Mesh(photoGeometry, photoMaterial);
+
+window.pm = photoMaterial;
+
+//altspace.addEventListener('touchpaddown', function(){alert('toouch');});
 
 Reveal.initialize({
 
@@ -73,7 +94,7 @@ Reveal.initialize({
     // Number of milliseconds between automatically proceeding to the
     // next slide, disabled when set to 0, this value can be overwritten
     // by using a data-autoslide attribute on your slides
-    autoSlide: 0,
+    autoSlide: 5000,
 
     // Stop auto-sliding after user input
     autoSlideStoppable: true,
@@ -116,42 +137,94 @@ Reveal.initialize({
 
 });
 
-
-
-
 Reveal.addEventListener( 'slidechanged', function( event ) {
+    var position = cube.position;
+    var scale = cube.scale;
+    window.scale = scale;
     if(event.indexh == 0){
-        var position = cube.position;
-        var target = {x: 0, y:0, z: 0 };
-        var tween = new TWEEN.Tween(position).to(target, 2000);
-        tween.onUpdate(function(){
-            console.log(position);
+        var positionTarget = {x: 0, y: -500, z: 500 };
+        var scaleTarget = {x: 1000, y: 1, z: 1000 };
+
+        var scaleTween = new TWEEN.Tween(scale).to(scaleTarget, 2000);
+        var positionTween = new TWEEN.Tween(position).to(positionTarget, 2000);
+        positionTween.onUpdate(function(){
+            cube.position.x = position.x;
+            cube.position.y = position.y;
             cube.position.z = position.z;
         });
-        tween.start();
+
+        scaleTween.onUpdate(function(){
+            cube.scale.x = scale.x;
+            cube.scale.y = scale.y;
+            cube.scale.z = scale.z;
+        });
+
+        positionTween.start();
+        scaleTween.start();
+
     }
-    else{
-        var position = cube.position;
-        var target = {x: 0, y:0, z: 500 };
-        var tween = new TWEEN.Tween(position).to(target, 2000);
-        tween.onUpdate(function(){
+    else if(event.indexh == 1){
+        var positionTarget = {x: 0, y: -500, z: 500 };
+        var scaleTarget = {x: 1000, y: 1000, z: 1000};
+
+        var scaleTween = new TWEEN.Tween(scale).to(scaleTarget, 2000);
+        var positionTween = new TWEEN.Tween(position).to(positionTarget, 2000);
+        positionTween.onUpdate(function(){
+            cube.position.x = position.x;
+            cube.position.y = position.y;
             cube.position.z = position.z;
         });
-        tween.start();
+
+        scaleTween.onUpdate(function(){
+            cube.scale.x = scale.x;
+            cube.scale.y = scale.y;
+            cube.scale.z = scale.z;
+        });
+
+        positionTween.start();
+        scaleTween.start();
     }
-} );
+    else if(event.indexh == 2){
+        var opacity = {x: 0.0};
+        var opacityTarget = {x: 1.0};
+        var opacityTween = new TWEEN.Tween(opacity).to(opacityTarget, 2000);
+        opacityTween.onUpdate(function(){
+            console.log(opacity);
+            photoMaterial.opacity = opacity.x;
+        });
+        opacityTween.start();
+    }
+});
 
 function createCube() {
-  cube.scale.multiplyScalar(CUBE_SCALE);
+  cube.scale.x = 1000;
+  cube.scale.y = 1;
+  cube.scale.z = 1000;
+
+  cube.position.x = 0;
+  cube.position.y = -500;
+  cube.position.z = 500;
+
   cube.addBehaviors(
     altspace.utilities.behaviors.Object3DSync(),
-    altspace.utilities.behaviors.Spin({ speed: 0.0005 }),
     new ChangeColorBehavior({callback: function(){TWEEN.update()}})
   );
   sim.scene.add(cube);
   return cube;
 }
 createCube();
+
+var manager = new THREE.LoadingManager();
+var loader = new THREE.OBJLoader( manager );
+loader.load( 'http://threejs.org/examples/obj/male02/male02.obj', function ( object ) {
+    object.position.z = 300;
+    sim.scene.add( object );
+});
+
+
+
+sim.scene.add( mesh );
+
 /*
 altspace.utilities.sync.connect(config).then((connection) => {
   const sceneSync = altspace.utilities.behaviors.SceneSync(connection.instance, {

@@ -140,60 +140,48 @@ Reveal.initialize({
 Reveal.addEventListener( 'slidechanged', function( event ) {
     var position = cube.position;
     var scale = cube.scale;
-    window.scale = scale;
+    var opacity = {x: photoMaterial.opacity}; 
+    var positionTarget, scaleTarget, opacityTarget;
+
     if(event.indexh == 0){
-        var positionTarget = {x: 0, y: -500, z: 500 };
-        var scaleTarget = {x: 1000, y: 1, z: 1000 };
-
-        var scaleTween = new TWEEN.Tween(scale).to(scaleTarget, 2000);
-        var positionTween = new TWEEN.Tween(position).to(positionTarget, 2000);
-        positionTween.onUpdate(function(){
-            cube.position.x = position.x;
-            cube.position.y = position.y;
-            cube.position.z = position.z;
-        });
-
-        scaleTween.onUpdate(function(){
-            cube.scale.x = scale.x;
-            cube.scale.y = scale.y;
-            cube.scale.z = scale.z;
-        });
-
-        positionTween.start();
-        scaleTween.start();
-
+        positionTarget = {x: 0, y: -500, z: 500 };
+        scaleTarget = {x: 1000, y: 1, z: 1000 };
+        opacityTarget = {x: 0.0};
     }
     else if(event.indexh == 1){
-        var positionTarget = {x: 0, y: -500, z: 500 };
-        var scaleTarget = {x: 1000, y: 1000, z: 1000};
-
-        var scaleTween = new TWEEN.Tween(scale).to(scaleTarget, 2000);
-        var positionTween = new TWEEN.Tween(position).to(positionTarget, 2000);
-        positionTween.onUpdate(function(){
-            cube.position.x = position.x;
-            cube.position.y = position.y;
-            cube.position.z = position.z;
-        });
-
-        scaleTween.onUpdate(function(){
-            cube.scale.x = scale.x;
-            cube.scale.y = scale.y;
-            cube.scale.z = scale.z;
-        });
-
-        positionTween.start();
-        scaleTween.start();
+        positionTarget = {x: 0, y: -500, z: 500 };
+        scaleTarget = {x: 1000, y: 1000, z: 1000};
+        opacityTarget = {x: 0.0};
     }
     else if(event.indexh == 2){
-        var opacity = {x: 0.0};
-        var opacityTarget = {x: 1.0};
-        var opacityTween = new TWEEN.Tween(opacity).to(opacityTarget, 2000);
-        opacityTween.onUpdate(function(){
-            console.log(opacity);
-            photoMaterial.opacity = opacity.x;
-        });
-        opacityTween.start();
+        positionTarget = {x: 0, y: -500, z: 500 };
+        scaleTarget = {x: 1000, y: 1, z: 1000};
+        opacityTarget = {x: 1.0};
     }
+
+    var scaleTween = new TWEEN.Tween(scale).to(scaleTarget, 2000);
+    var positionTween = new TWEEN.Tween(position).to(positionTarget, 2000);
+    var opacityTween = new TWEEN.Tween(opacity).to(opacityTarget, 2000);
+
+    positionTween.onUpdate(function(){
+        cube.position.x = position.x;
+        cube.position.y = position.y;
+        cube.position.z = position.z;
+    });
+
+    scaleTween.onUpdate(function(){
+        cube.scale.x = scale.x;
+        cube.scale.y = scale.y;
+        cube.scale.z = scale.z;
+    });
+
+    opacityTween.onUpdate(function(){
+        photoMaterial.opacity = opacity.x;
+    });
+
+    positionTween.start();
+    scaleTween.start();
+    opacityTween.start();
 });
 
 function createCube() {
